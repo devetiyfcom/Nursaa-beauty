@@ -255,7 +255,7 @@ main{position:relative;z-index:2;max-width:620px;margin:0 auto;padding:28px 16px
     <div class="venue reveal"><span class="gold">Məkan:</span> <em>Elektra Hall</em></div>
     <div class="btns reveal">
       <a class="btn" id="mapBtn" target="_blank" rel="noopener">Xəritədə bax</a>
-      <button class="btn ghost" id="calBtn">Təqvimə əlavə et</button>
+      <a class="btn ghost" href="https://waze.com/ul?q=Elektra%20Hall%20Baku&navigate=yes" target="_blank" rel="noopener">Waze ilə get</a>
     </div>
 
     <div class="rule reveal" style="margin-top:34px"></div>
@@ -429,13 +429,7 @@ function tick(){let t=Math.max(0,EVENT-new Date());
   d.textContent=Math.floor(t/864e5);h.textContent=pad(Math.floor(t/36e5)%24);m.textContent=pad(Math.floor(t/6e4)%60);s.textContent=pad(Math.floor(t/1e3)%60)}
 tick();setInterval(tick,1000);
 
-/* ====== təqvim (.ics) ====== */
-document.getElementById('calBtn').onclick=()=>{
-  const ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Devetify//NURSAA//AZ','BEGIN:VEVENT','UID:nursaa-awards-2026@devetify',
-   'DTSTAMP:20261125T000000Z','DTSTART:20261210T140000Z','DTEND:20261210T190000Z','SUMMARY:NURSAA Beauty Awards 2026',
-   'LOCATION:Elektra Hall','DESCRIPTION:Xüsusi dəvətnamə — NURSAA Professional Hair Cosmetics','END:VEVENT','END:VCALENDAR'].join('\r\n');
-  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([ics],{type:'text/calendar'}));a.download='nursaa-beauty-awards.ics';a.click();
-};
+
 </script>
 </body>
 </html>
