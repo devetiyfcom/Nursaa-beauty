@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Dəvət göndər — NURSAA</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#d9b46a;--gold-l:#f3dca0;--ink:#0b0a09;--line:rgba(217,180,106,.45)}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:linear-gradient(160deg,#141210,#070606 50%,#14110d);color:#ead7ad;font:16px/1.5 'Montserrat',sans-serif;min-height:100vh}
+.wrap{max-width:640px;margin:0 auto;padding:28px 16px 60px}
+h1{font:600 clamp(30px,8vw,40px)/1.1 'Cormorant Garamond',serif;color:var(--gold-l);margin:0 0 6px;text-align:center}
+.sub{text-align:center;font-size:13px;color:rgba(234,215,173,.7);margin:0 0 22px}
+.card{border:1px solid var(--line);background:rgba(10,9,8,.7);padding:18px;margin-bottom:18px}
+.card h2{font:500 12px 'Montserrat',sans-serif;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin:0 0 14px}
+label{display:block;font-size:13px;color:rgba(234,215,173,.8);margin:0 0 6px}
+input,textarea{width:100%;font:16px 'Montserrat',sans-serif;color:var(--gold-l);background:#0c0b09;border:1px solid var(--line);padding:12px;outline:none}
+input:focus,textarea:focus{border-color:var(--gold-l);box-shadow:0 0 0 3px rgba(217,180,106,.15)}
+textarea{min-height:130px;resize:vertical;line-height:1.5}
+.row{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:10px;margin-bottom:4px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+button{min-height:44px;font:500 12px 'Montserrat',sans-serif;letter-spacing:.14em;text-transform:uppercase;padding:0 18px;cursor:pointer;
+  border:0;background:linear-gradient(100deg,#9c7a3c,#e9c983 40%,#fff1c7 55%,#d9b46a 75%,#8f6d33);color:var(--ink)}
+button.ghost{background:transparent;color:var(--gold);border:1px solid var(--gold)}
+button:disabled{opacity:.4;cursor:default}
+button:focus-visible{outline:2px solid var(--gold-l);outline-offset:2px}
+.hint{font-size:12px;color:rgba(234,215,173,.6);margin-top:8px}
+.err{color:#f0a48a;font-size:13px;margin-top:8px;min-height:0}
+
+/* sayğac */
+.stat{text-align:center;padding:22px 16px}
+.stat .lbl{font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold)}
+.stat .num{font:600 clamp(64px,20vw,92px)/1 'Cormorant Garamond',serif;color:var(--gold-l);margin:8px 0 2px;font-variant-numeric:tabular-nums}
+.stat .unit{font:italic 22px 'Cormorant Garamond',serif;color:#ead7ad}
+.stat .split{display:flex;justify-content:center;gap:10px;margin-top:14px}
+.stat .split div{border:1px solid var(--line);padding:8px 14px;font-size:12px;letter-spacing:.08em}
+.stat .split b{display:block;font:600 24px 'Cormorant Garamond',serif;color:var(--gold-l)}
+
+.list{display:grid;gap:10px}
+.item{border:1px solid var(--line);padding:12px;display:grid;gap:8px}
+.item.sent{border-color:rgba(217,180,106,.8);background:rgba(217,180,106,.06)}
+.item .n{font:600 20px 'Cormorant Garamond',serif;color:var(--gold-l)}
+.item .n small{font:500 11px 'Montserrat',sans-serif;color:var(--gold);margin-left:8px;letter-spacing:.1em}
+.item .n .ok{color:#9fd59a}
+.item .u{font-size:12px;color:rgba(234,215,173,.6);overflow-wrap:anywhere}
+.item .a{display:flex;flex-wrap:wrap;gap:8px}
+.item .a button{min-height:40px;padding:0 12px;font-size:11px}
+.log{display:grid;gap:6px;max-height:340px;overflow:auto}
+.log div{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid rgba(217,180,106,.18);padding:6px 0;font-size:14px}
+.log div span:last-child{color:rgba(234,215,173,.55);font-size:12px;white-space:nowrap}
+.log .anon{font-style:italic;color:rgba(234,215,173,.75)}
+.empty{text-align:center;font-size:13px;color:rgba(234,215,173,.5);padding:10px 0}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--gold-l);color:var(--ink);padding:10px 18px;font-size:13px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:9}
+#toast.on{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Dəvət göndər</h1>
+  <p class="sub">NURSAA Beauty Awards 2026 — buradan göndərilən hər dəvət sayılır</p>
+
+  <div class="card stat">
+    <div class="lbl">Göndərilib</div>
+    <div class="num" id="total">0</div>
+    <div class="unit">nəfərə</div>
+    <div class="split">
+      <div><b id="named">0</b>adlı</div>
+      <div><b id="anon">0</b>adsız</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Yeni dəvət</h2>
+    <div class="row">
+      <div><label for="gName">Qonağın adı <span style="opacity:.6">(istəyə görə)</span></label><input id="gName" placeholder="Leyla xanım" autocomplete="off"></div>
+      <div><label for="gTable">Masa №</label><input id="gTable" type="number" min="1" inputmode="numeric" placeholder="5"></div>
+    </div>
+    <p class="hint">Ad yazılmasa, dəvətnamədə «Hörmətli Qonağımız» görünəcək.</p>
+    <div class="btns">
+      <button id="sWa">WhatsApp-da göndər</button>
+      <button class="ghost" id="sShare">Paylaş</button>
+      <button class="ghost" id="sCopy">Linki kopyala</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Siyahı ilə hazırla</h2>
+    <label for="bulk">Hər sətirdə bir qonaq: ad - masa</label>
+    <textarea id="bulk" placeholder="Leyla xanım - 5&#10;Aynur Məmmədova - 12&#10;Elvin bəy"></textarea>
+    <div class="btns"><button id="addBulk">Siyahıya əlavə et</button></div>
+    <p class="err" id="err2"></p>
+    <div class="list" id="list" style="margin-top:14px"></div>
+  </div>
+
+  <div class="card">
+    <h2>Kimlərə göndərilib</h2>
+    <div class="log" id="log"><p class="empty">Hələ dəvət göndərilməyib</p></div>
+    <div class="btns">
+      <button class="ghost" id="copyLog">Siyahını kopyala</button>
+      <button class="ghost" id="undo">Sonuncunu sil</button>
+    </div>
+    <p class="hint">Sayğac bu telefonda / brauzerdə saxlanılır. Dəvətləri həmişə eyni cihazdan göndərin.</p>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+{
+const $ = id => document.getElementById(id);
+const store = { get(k){try{return localStorage.getItem(k)}catch(e){return null}}, set(k,v){try{localStorage.setItem(k,v)}catch(e){}} };
+const load = (k) => { try { return JSON.parse(store.get(k) || '[]') } catch(e) { return [] } };
+let items = load('nursaa2_list');   // hazırlanmış qonaqlar
+let sent  = load('nursaa2_sent');   // göndərilmələr: {ad, masa, via, t}
+
+const BASE = /github\.io$/.test(location.hostname)
+  ? location.href.replace(/[?#].*$/,'').replace(/[^/]*$/,'')
+  : 'https://devetiyfcom.github.io/Nursaa-beauty/v2/';
+
+function linkFor(ad, masa){
+  const p = new URLSearchParams(); if (ad) p.set('ad', ad); if (masa) p.set('masa', masa);
+  const q = p.toString().replace(/\+/g,'%20');
+  return BASE + (q ? '?' + q : '');
+}
+const msgFor = (ad, masa) => (ad ? `Hörmətli ${ad}, sizi` : 'Sizi') + ` NURSAA Beauty Awards 2026 gecəsinə dəvət edirik.\n${linkFor(ad, masa)}`;
+const esc = t => String(t).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(t){ $('toast').textContent = t; $('toast').classList.add('on'); clearTimeout(toast.h); toast.h = setTimeout(()=>$('toast').classList.remove('on'),1800) }
+async function copyText(t){
+  try { await navigator.clipboard.writeText(t); return true }
+  catch(e){ const a=document.createElement('textarea'); a.value=t; document.body.appendChild(a); a.select(); let ok=false; try{ok=document.execCommand('copy')}catch(_){} a.remove(); return ok }
+}
+const cleanMasa = m => { m = String(m||'').trim(); return m && +m > 0 ? String(+m) : '' };
+const save = () => { store.set('nursaa2_list', JSON.stringify(items)); store.set('nursaa2_sent', JSON.stringify(sent)) };
+
+/* ---- göndərmə: hər birində sayğac artır ---- */
+function record(ad, masa, via){
+  sent.push({ ad: ad || '', masa: masa || '', via, t: Date.now() });
+  const it = ad && items.find(x => x.ad.toLowerCase() === ad.toLowerCase());
+  if (it) it.sent = true;
+  save(); render();
+}
+function sendWa(ad, masa){
+  const a = document.createElement('a'); a.href = 'https://wa.me/?text=' + encodeURIComponent(msgFor(ad, masa));
+  a.target = '_blank'; a.rel = 'noopener'; a.click();
+  record(ad, masa, 'WhatsApp'); toast('Göndərilənlərə əlavə olundu');
+}
+async function sendShare(ad, masa){
+  if (!navigator.share){ return sendCopy(ad, masa) }
+  try { await navigator.share({ text: msgFor(ad, masa) }); record(ad, masa, 'Paylaş'); toast('Göndərilənlərə əlavə olundu') }
+  catch(e){ /* ləğv edildi — sayılmır */ }
+}
+async function sendCopy(ad, masa){
+  if (await copyText(msgFor(ad, masa))){ record(ad, masa, 'Kopyala'); toast('Kopyalandı və sayıldı') }
+  else toast('Kopyalamaq olmadı');
+}
+
+function current(){ return [$('gName').value.trim(), cleanMasa($('gTable').value)] }
+function resetForm(){ $('gName').value = ''; $('gTable').value = '' }
+$('sWa').onclick    = () => { const [a,m] = current(); sendWa(a,m); resetForm() };
+$('sShare').onclick = async () => { const [a,m] = current(); await sendShare(a,m); resetForm() };
+$('sCopy').onclick  = async () => { const [a,m] = current(); await sendCopy(a,m); resetForm() };
+
+/* ---- siyahı ---- */
+function add(ad, masa){
+  ad = ad.trim(); if (!ad) return false;
+  const rec = { ad, masa: cleanMasa(masa), sent: false };
+  const i = items.findIndex(x => x.ad.toLowerCase() === ad.toLowerCase());
+  if (i >= 0) { rec.sent = items[i].sent; items[i] = rec } else items.push(rec);
+  return true;
+}
+$('addBulk').onclick = () => {
+  $('err2').textContent = '';
+  const lines = $('bulk').value.split('\n').map(l => l.trim()).filter(Boolean);
+  if (!lines.length){ $('err2').textContent = 'Siyahı boşdur'; return }
+  let n = 0;
+  for (const l of lines){
+    const m = l.match(/^(.*?)[\s\-–—:,;|\t]+(?:masa\s*)?№?\s*(\d+)\s*$/i);
+    if (m && add(m[1].replace(/[\-–—:,;|]+$/,''), m[2])) n++; else if (add(l,'')) n++;
+  }
+  save(); render(); $('bulk').value = ''; toast(n + ' qonaq əlavə olundu');
+};
+$('list').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const it = items[b.dataset.i]; if (!it) return;
+  if (b.dataset.k === 'w') sendWa(it.ad, it.masa);
+  if (b.dataset.k === 's') sendShare(it.ad, it.masa);
+  if (b.dataset.k === 'c') sendCopy(it.ad, it.masa);
+  if (b.dataset.k === 'd') { items.splice(+b.dataset.i,1); save(); render() }
+});
+
+/* ---- göndərilənlər ---- */
+const p2 = n => String(n).padStart(2,'0');
+const fmt = t => { const d = new Date(t); return `${p2(d.getDate())}.${p2(d.getMonth()+1)} ${p2(d.getHours())}:${p2(d.getMinutes())}` };
+function render(){
+  const named = sent.filter(s => s.ad).length;
+  $('total').textContent = sent.length; $('named').textContent = named; $('anon').textContent = sent.length - named;
+
+  let k = 0;
+  const rows = sent.map(s => { if (!s.ad) k++; return { s, label: s.ad ? s.ad : `Adsız qonaq #${k}` } });
+  $('log').innerHTML = rows.length ? rows.slice().reverse().map(({s,label}) =>
+    `<div><span class="${s.ad?'':'anon'}">${esc(label)}${s.masa?` · Masa ${esc(s.masa)}`:''}</span><span>${s.via} · ${fmt(s.t)}</span></div>`).join('')
+    : '<p class="empty">Hələ dəvət göndərilməyib</p>';
+
+  $('list').innerHTML = items.map((it,i) => `
+    <div class="item${it.sent?' sent':''}">
+      <div class="n">${esc(it.ad)}${it.masa?`<small>MASA ${esc(it.masa)}</small>`:''}${it.sent?'<small class="ok">✓ GÖNDƏRİLİB</small>':''}</div>
+      <div class="a">
+        <button data-i="${i}" data-k="w">WhatsApp</button>
+        <button class="ghost" data-i="${i}" data-k="s">Paylaş</button>
+        <button class="ghost" data-i="${i}" data-k="c">Kopyala</button>
+        <button class="ghost" data-i="${i}" data-k="d" aria-label="Sil">✕</button>
+      </div>
+      <div class="u">${esc(linkFor(it.ad, it.masa))}</div>
+    </div>`).join('');
+}
+$('copyLog').onclick = async () => {
+  if (!sent.length) return;
+  let k = 0;
+  const txt = `Göndərilib: ${sent.length} nəfər\n\n` + sent.map((s,i) => { if (!s.ad) k++; return `${i+1}. ${s.ad || 'Adsız qonaq #' + k}${s.masa ? ' (Masa ' + s.masa + ')' : ''} — ${fmt(s.t)}` }).join('\n');
+  toast(await copyText(txt) ? 'Kopyalandı' : 'Kopyalamaq olmadı');
+};
+$('undo').onclick = () => {
+  if (!sent.length) return;
+  const last = sent.pop();
+  if (last.ad && !sent.some(s => s.ad.toLowerCase() === last.ad.toLowerCase())){
+    const it = items.find(x => x.ad.toLowerCase() === last.ad.toLowerCase()); if (it) it.sent = false;
+  }
+  save(); render(); toast('Sonuncu göndəriş silindi');
+};
+render();
+}
+</script>
+</body>
+</html>
