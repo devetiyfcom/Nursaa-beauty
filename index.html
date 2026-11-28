@@ -162,14 +162,21 @@ main{position:relative;z-index:2;max-width:620px;margin:0 auto;padding:28px 16px
 .seat .lbl{font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:.32em;color:var(--gold);text-transform:uppercase}
 .seat .no{font-size:clamp(54px,16vw,80px);font-weight:600;line-height:1;margin:8px 0 2px}
 .seat .who{font-style:italic;font-size:clamp(19px,5vw,23px);color:#ead7ad}
-.hall{position:relative;margin:22px auto 0;max-width:420px;border:1px solid rgba(217,180,106,.45);padding:14px 12px 16px;background:rgba(10,9,8,.55)}
-.stage{margin:0 auto 14px;width:62%;padding:6px 0;border:1px solid rgba(217,180,106,.6);font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:.35em;color:var(--gold);
-  border-radius:0 0 40px 40px;background:linear-gradient(rgba(217,180,106,.12),transparent)}
-.tables{display:grid;grid-template-columns:repeat(5,1fr);gap:10px 8px;justify-items:center}
-.tables i{width:34px;height:34px;border-radius:50%;border:1px solid rgba(217,180,106,.45);display:flex;align-items:center;justify-content:center;
-  font-style:normal;font-family:'Montserrat',sans-serif;font-size:11px;color:rgba(234,215,173,.6)}
-.tables i.me{background:var(--goldgrad);background-size:200% 100%;color:var(--ink);border:0;font-weight:500;animation:shine 3s linear infinite,me 1.8s ease-in-out infinite}
-@keyframes me{50%{box-shadow:0 0 0 7px rgba(243,220,160,.18),0 0 18px rgba(243,220,160,.7)}}
+.hall{position:relative;margin:22px auto 0;max-width:420px;border:1px solid rgba(217,180,106,.45);padding:10px;background:rgba(10,9,8,.55)}
+.hall svg{display:block;width:100%;height:auto;overflow:visible}
+.hall .st{fill:rgba(217,180,106,.10);stroke:rgba(217,180,106,.75);stroke-width:1}
+.hall .stl{font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:4px;fill:var(--gold)}
+.hall .t circle{fill:rgba(10,9,8,.6);stroke:rgba(217,180,106,.5);stroke-width:1}
+.hall .t text{font-family:'Montserrat',sans-serif;font-size:10px;fill:rgba(234,215,173,.6);text-anchor:middle;dominant-baseline:central}
+.hall .t.vip circle{stroke:rgba(217,180,106,.8)}
+.hall .t.me circle{fill:url(#gg);stroke:#fff1c7;stroke-width:1.2;filter:drop-shadow(0 0 6px rgba(243,220,160,.9))}
+.hall .t.me text{fill:var(--ink);font-weight:500;font-size:12px}
+.hall .ring{fill:none;stroke:#f3dca0;stroke-width:1.2;transform-box:fill-box;transform-origin:center;animation:ring2 1.8s ease-out infinite}
+@keyframes ring2{from{transform:scale(1);opacity:.9}to{transform:scale(1.9);opacity:0}}
+.hall .pin{font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:1.5px;fill:var(--gold-l);text-anchor:middle}
+.legend{display:flex;justify-content:center;gap:16px;margin-top:10px;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:.12em;color:rgba(234,215,173,.7)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px;border:1px solid rgba(217,180,106,.6)}
+.legend i.g{background:var(--goldgrad);border:0}
 .rsvp .lbl,.wish .lbl,#modal .lbl{font-family:'Montserrat',sans-serif;font-size:11px;letter-spacing:.32em;color:var(--gold);text-transform:uppercase}
 .wsub{font-style:italic;font-size:clamp(18px,4.8vw,21px);color:#ead7ad;margin-top:8px}
 #wishText{display:block;width:100%;margin-top:16px;padding:14px;background:rgba(10,9,8,.7);border:1px solid rgba(217,180,106,.55);color:var(--gold-l);
@@ -279,7 +286,7 @@ main{position:relative;z-index:2;max-width:620px;margin:0 auto;padding:28px 16px
         <div class="no gold" id="tableNo"></div>
         <div class="who">Sizin masanız</div>
       </div>
-      <div class="hall reveal"><div class="stage">SƏHNƏ</div><div class="tables" id="tables"></div></div>
+      <div class="hall reveal"><div id="hallPlan"></div><div class="legend"><span><i class="g"></i>Sizin masa</span><span><i></i>Digər masalar</span></div></div>
     </div>
 
     <div class="rule reveal" style="margin-top:34px"></div>
@@ -325,12 +332,36 @@ const EVENT = new Date('2026-12-10T18:00:00+04:00');
 const MAP_URL = 'https://www.google.com/maps/search/?api=1&query=Elektra+Hall+Baku';
 const RSVP_PHONE = '994552536553';   // 055 253 65 53
 const DEFAULT_GUEST = 'Qonağımız';
-const TABLE_COUNT = 20;           // zaldakı masaların sayı
+const TABLE_COUNT = 24;           // zaldakı masaların sayı (1–4 səhnə önü, 5–24 zal)
 /* Qonaq siyahısı: link → index.html?q=1  (və ya birbaşa ?ad=Leyla%20xanım&masa=5) */
 const GUESTS = {
   // '1': {ad:'Leyla xanım',  masa:5},
   // '2': {ad:'Aynur xanım',  masa:12},
 };
+
+/* ====== zal planı (eskizə uyğun) ====== */
+function hallSVG(me){
+  // [x, y, radius] — 1–4: səhnə önündəki böyük masalar, 5–24: zal (5 cərgə × 4 masa)
+  const T = [[66,70,17],[234,70,17],[50,132,19],[250,132,21]];
+  const X = [46,114,186,254];
+  for (let r=0; r<5; r++) for (let c=0; c<4; c++) T.push([X[c], 200 + r*44, 14]);
+  let g = '';
+  T.forEach(([x,y,r],i)=>{
+    const n=i+1, on=n===me;
+    g += `<g class="t${i<4?' vip':''}${on?' me':''}">` +
+      (on?`<circle class="ring" cx="${x}" cy="${y}" r="${r}"/>`:'') +
+      `<circle cx="${x}" cy="${y}" r="${r}"/><text x="${x}" y="${y}">${n}</text></g>`;
+  });
+  let pin='';
+  if (me>0 && me<=T.length){ const [x,y,r]=T[me-1]; pin=`<text class="pin" x="${x}" y="${y-r-7}">SİZ</text>`; }
+  return `<svg viewBox="0 0 300 395" role="img" aria-label="Zal planı, sizin masanız ${me}">
+    <defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#9c7a3c"/><stop offset=".45" stop-color="#fff1c7"/><stop offset="1" stop-color="#b8924a"/></linearGradient></defs>
+    <rect class="st" x="12" y="6" width="276" height="26" rx="2"/>
+    <text class="stl" x="150" y="22" text-anchor="middle">SƏHNƏ</text>
+    <rect class="st" x="130" y="32" width="40" height="112"/>
+    <text class="stl" x="150" y="88" text-anchor="middle" dominant-baseline="central" transform="rotate(90 150 88)">PODİUM</text>
+    ${g}${pin}</svg>`;
+}
 
 /* ====== qonaq adı: ?ad=Leyla%20xanım ====== */
 const params = new URLSearchParams(location.search);
@@ -341,8 +372,7 @@ if (guest) document.getElementById('mname').textContent = 'Hörmətli ' + guest;
 if (table > 0){
   document.getElementById('seatSec').style.display = 'block';
   document.getElementById('tableNo').textContent = '№ ' + table;
-  const n = Math.max(TABLE_COUNT, table);
-  document.getElementById('tables').innerHTML = Array.from({length:n},(_, i)=>`<i class="${i+1===table?'me':''}">${i+1}</i>`).join('');
+  document.getElementById('hallPlan').innerHTML = hallSVG(table);
 }
 document.getElementById('guest').textContent = guest || DEFAULT_GUEST;
 document.getElementById('mapBtn').href = MAP_URL;
