@@ -332,7 +332,7 @@ const EVENT = new Date('2026-12-10T18:00:00+04:00');
 const MAP_URL = 'https://www.google.com/maps/search/?api=1&query=Elektra+Hall+Baku';
 const RSVP_PHONE = '994552536553';   // 055 253 65 53
 const DEFAULT_GUEST = 'Qonağımız';
-const TABLE_COUNT = 24;           // zaldakı masaların sayı (1–4 səhnə önü, 5–24 zal)
+const TABLE_COUNT = 24;           // zaldakı masaların sayı (21–24 səhnə önü, 1–20 zal)
 /* Qonaq siyahısı: link → index.html?q=1  (və ya birbaşa ?ad=Leyla%20xanım&masa=5) */
 const GUESTS = {
   // '1': {ad:'Leyla xanım',  masa:5},
@@ -341,19 +341,22 @@ const GUESTS = {
 
 /* ====== zal planı (eskizə uyğun) ====== */
 function hallSVG(me){
-  // [x, y, radius] — 1–4: səhnə önündəki böyük masalar, 5–24: zal (5 cərgə × 4 masa)
+  // [x, y, radius] — əvvəl səhnə önündəki 4 böyük masa, sonra zal (5 cərgə × 4 masa)
   const T = [[66,70,17],[234,70,17],[50,132,19],[250,132,21]];
   const X = [46,114,186,254];
   for (let r=0; r<5; r++) for (let c=0; c<4; c++) T.push([X[c], 200 + r*44, 14]);
+  // masa nömrələri (eskizdəki sıra ilə): səhnə önü 21,23 / 22,24; zal sütunları: 11–15 | 1,3,5,7,9 | 2,4,6,8,10 | 16–20
+  const NUM = [21,23,22,24, 11,1,2,16, 12,3,4,17, 13,5,6,18, 14,7,8,19, 15,9,10,20];
   let g = '';
   T.forEach(([x,y,r],i)=>{
-    const n=i+1, on=n===me;
+    const n=NUM[i], on=n===me;
     g += `<g class="t${i<4?' vip':''}${on?' me':''}">` +
       (on?`<circle class="ring" cx="${x}" cy="${y}" r="${r}"/>`:'') +
       `<circle cx="${x}" cy="${y}" r="${r}"/><text x="${x}" y="${y}">${n}</text></g>`;
   });
   let pin='';
-  if (me>0 && me<=T.length){ const [x,y,r]=T[me-1]; pin=`<text class="pin" x="${x}" y="${y-r-7}">SİZ</text>`; }
+  const mi = NUM.indexOf(me);
+  if (mi>=0){ const [x,y,r]=T[mi]; pin=`<text class="pin" x="${x}" y="${y-r-7}">SİZ</text>`; }
   return `<svg viewBox="0 0 300 395" role="img" aria-label="Zal planı, sizin masanız ${me}">
     <defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#9c7a3c"/><stop offset=".45" stop-color="#fff1c7"/><stop offset="1" stop-color="#b8924a"/></linearGradient></defs>
     <rect class="st" x="12" y="6" width="276" height="26" rx="2"/>
